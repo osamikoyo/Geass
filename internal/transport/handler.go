@@ -1,7 +1,7 @@
 package transport
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/osamikoyo/geass/internal/service"
@@ -13,26 +13,16 @@ type Handler struct {
 	service *service.Service
 }
 
-func (h *Handler) GET(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			h.logger.Error().Str("URL", r.URL.Path).Err(errors.New(
-				"method not get",
-			))
-		}
-	}
+func (h Handler) RegisterRouter(mux *http.ServeMux) {
+	mux.HandleFunc("/getcontent", h.ErrorRoute(h.MainHandler))
+	mux.HandleFunc("/ping",  h.ErrorRoute(h.PingHandler))
 }
 
-func (h *Handler) RegisterRouter(mux *http.ServeMux) {
-	mux.Handle("/getcontent", h.GET(h.ErrorRoute(h.MainHandler)))
-	mux.Handle("/ping",  h.GET(h.ErrorRoute(h.PingHandler)))
-}
-
-func New(urls []string) Handler {
+func New() Handler {
 	return Handler{
 		service: &service.Service{
 			Logger: loger.New(),
-			URLS: urls,
+			URLS: make([]string, 1),
 			Contents: make(map[string]string),
 		},
 	}
@@ -49,8 +39,8 @@ func (h *Handler) ErrorRoute(handler handlerFunc) http.HandlerFunc {
 }
 
 func (h *Handler) PingHandler(w http.ResponseWriter, r *http.Request) error {
-	_, err := w.Write([]byte("PONG!!!:333"))
-	return err
+	fmt.Fprint(w, "hello")
+	return nil
 }
 
 func (h *Handler) MainHandler(w http.ResponseWriter, r *http.Request) error {

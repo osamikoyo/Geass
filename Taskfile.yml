@@ -1,0 +1,10 @@
+version : 3
+
+tasks:
+  build:
+    cmds:
+      - go build -o bin/app cmd/main.go
+  run:
+    cmds:
+      - task build
+      - ./bin/app

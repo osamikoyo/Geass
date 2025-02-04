@@ -15,9 +15,8 @@ type Server struct {
 	Handler *transport.Handler
 	mux *http.ServeMux
 }
-
 func New() Server {
-	handler := transport.New([]string{"https://ru.wikipedia.org/wiki/Motion_blur"})
+	handler := transport.New()
 	return Server{
 		Handler: &handler,
 		Logger: loger.New(),
