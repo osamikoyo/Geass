@@ -47,3 +47,9 @@ func (s *Service) Start() error {
 
 	return nil
 }
+
+func (s *Service) DisplayContent() {
+	for i, u := range s.Contents {
+		fmt.Printf("Url: %s Content: %s\n", i, u)
+	}
+}
