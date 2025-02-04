@@ -26,9 +26,7 @@ func (s *Service) traverse(n *html.Node, url string) {
 	}
 }
 
-func (s *Service) Start() error {
-	for _, u := range s.URLS {
-
+func (s *Service) Start(u string) error {
 		s.Logger.Info().Str("URL", u).Msg("Started request")
 
 		resp, err := http.Get(u)
@@ -42,7 +40,6 @@ func (s *Service) Start() error {
 			s.Logger.Error().Str("URL", u).Msg("Cant parse to html: " + err.Error())
 		}
 		s.traverse(doc , u)
-	}
 
 	return nil
 }

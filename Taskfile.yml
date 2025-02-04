@@ -8,3 +8,6 @@ tasks:
     cmds:
       - task build
       - ./bin/app
+  deps:
+    cmds:
+      - go mod download

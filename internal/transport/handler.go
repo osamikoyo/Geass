@@ -39,15 +39,14 @@ func (h *Handler) ErrorRoute(handler handlerFunc) http.HandlerFunc {
 }
 
 func (h *Handler) PingHandler(w http.ResponseWriter, r *http.Request) error {
-	fmt.Fprint(w, "hello")
+	fmt.Fprint(w, "PING!!:3")
 	return nil
 }
 
 func (h *Handler) MainHandler(w http.ResponseWriter, r *http.Request) error {
 	url := r.URL.Query().Get("url")
 
-	h.service.AddUrl(url)
-	h.service.Start()
+	h.service.Start(url)
 	h.service.DisplayContent()
 	return nil	
 }

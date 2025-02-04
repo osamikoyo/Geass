@@ -50,7 +50,7 @@ func (s *Server) Run(ctx context.Context) error {
 /   \  ____/ __ \\__  \  /  ___//  ___/
 \    \_\  \  ___/ / __ \_\___ \ \___ \ 
  \______  /\___  >____  /____  >____  >
-        \/     \/     \/     \/     \/ `)
+        \/     \/     \/     \/     \/n\n\n`)
 	
 	if err := s.HttpServer.ListenAndServe();err != nil{
 		return err
