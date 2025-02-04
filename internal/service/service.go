@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/osamikoyo/geass/pkg/loger"
 	"golang.org/x/net/html"
-	"io/ioutil"
 	"net/http"
 )
 
