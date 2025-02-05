@@ -6,4 +6,3 @@ type Config struct{
 	DisAgreeDomains []string `yaml:"disagree_domains"`
 }
 
-func New()
