@@ -2,9 +2,10 @@ package service
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/osamikoyo/geass/pkg/loger"
 	"golang.org/x/net/html"
-	"net/http"
 )
 
 type Service struct {
@@ -18,8 +19,34 @@ func (s *Service) AddUrl(url string) {
 }
 
 func (s *Service) traverse(n *html.Node, url string) {
-	if n.Type == html.ElementNode {
-		s.Contents[url] = n.Data
+	if n.Type == html.ElementNode && n.Data == "li" {
+		var name string
+		var price string
+		var imageURL string
+
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+		switch c.Data {
+			case "h2":
+			if c.FirstChild != nil && c.FirstChild.Type == html.TextNode {
+				name = c.FirstChild.Data
+			}
+			case "span":
+			for _, _ = range c.Attr {
+				if c.FirstChild != nil && c.FirstChild.Type == html.TextNode {
+						price = c.FirstChild.Data
+				}
+			}
+			case "img":
+			for _, a := range c.Attr {
+				if a.Key == "src" {
+					imageURL = a.Val
+				}
+			}
+			}
+		}
+		fmt.Println("Product Name:", name)
+		fmt.Println("Price:", price)
+		fmt.Println("Image URL:", imageURL)
 	}
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		s.traverse(c, url)
