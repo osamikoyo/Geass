@@ -42,7 +42,6 @@ func (s *Server) Run(ctx context.Context) error {
 	s.Handler.RegisterRouter(s.mux)
 
 	s.HttpServer.Handler = s.mux
-	s.Logger.Info().Str("Server Addr", s.HttpServer.Addr).Msg("SERVER STARTING!")
 
 	fmt.Print(`
   ________                             
@@ -54,6 +53,7 @@ func (s *Server) Run(ctx context.Context) error {
 
 
 `)
+	s.Logger.Info().Str("Server Addr", s.HttpServer.Addr).Msg("SERVER STARTING!")
 	
 	if err := s.HttpServer.ListenAndServe();err != nil{
 		return err

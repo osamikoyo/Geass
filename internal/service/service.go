@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fmt"
+	"io"
 	"sync"
 
 	"github.com/osamikoyo/geass/pkg/loger"
@@ -14,18 +14,13 @@ type Service struct {
 }
 
 
-func (s *Service) Start(u string) error {
+func (s *Service) Start(u string, w io.Writer) error {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go parsePage(u, 1, &wg)
+	go parsePage(u, 1, &wg, w)
 
 	wg.Wait()
 	return nil
 }
 
-func (s *Service) DisplayContent() {
-	for i, u := range s.Contents {
-		fmt.Printf("Url: %s Content: %s\n", i, u)
-	}
-}

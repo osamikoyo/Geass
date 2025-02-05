@@ -14,7 +14,7 @@ type Handler struct {
 }
 
 func (h Handler) RegisterRouter(mux *http.ServeMux) {
-	mux.HandleFunc("/getcontent", h.ErrorRoute(h.MainHandler))
+	mux.HandleFunc("/getcontent", h.ErrorRoute(h.GetUrlsHandler))
 	mux.HandleFunc("/ping",  h.ErrorRoute(h.PingHandler))
 }
 
@@ -38,15 +38,18 @@ func (h *Handler) ErrorRoute(handler handlerFunc) http.HandlerFunc {
 	}
 }
 
+func (h *Handler) GetContentHandler(w http.ResponseWriter, r *http.Request) error {
+	
+}
+
 func (h *Handler) PingHandler(w http.ResponseWriter, r *http.Request) error {
 	fmt.Fprint(w, "PING!!:3")
 	return nil
 }
 
-func (h *Handler) MainHandler(w http.ResponseWriter, r *http.Request) error {
+func (h *Handler) GetUrlsHandler(w http.ResponseWriter, r *http.Request) error {
 	url := r.URL.Query().Get("url")
 
-	h.service.Start(url)
-	h.service.DisplayContent()
+	h.service.Start(url, w)
 	return nil	
 }

@@ -2,10 +2,12 @@ package service
 
 import (
 	"fmt"
-	"golang.org/x/net/html"
+	"io"
 	"net/http"
 	"net/url"
 	"sync"
+
+	"golang.org/x/net/html"
 )
 
 type visitedURLs struct {
@@ -27,7 +29,7 @@ func (v *visitedURLs) isVisited(url string) bool {
 
 var visited = visitedURLs{urls: make(map[string]bool)}
 
-func extractLinks(n *html.Node, baseURL string, depth int, wg *sync.WaitGroup) {
+func extractLinks(n *html.Node, baseURL string, depth int, wg *sync.WaitGroup, w io.Writer) {
     defer wg.Done()
 
     if n.Type == html.ElementNode {
@@ -41,9 +43,10 @@ func extractLinks(n *html.Node, baseURL string, depth int, wg *sync.WaitGroup) {
                     if !visited.isVisited(absoluteURL) {
                         visited.add(absoluteURL)
                         fmt.Println("Ссылка:", absoluteURL)
+						w.Write([]byte(absoluteURL))
                         if depth < 2 {
                             wg.Add(1)
-                            go parsePage(absoluteURL, depth+1, wg)
+                            go parsePage(absoluteURL, depth+1, wg, w)
                         }
                     }
                     break
@@ -54,11 +57,11 @@ func extractLinks(n *html.Node, baseURL string, depth int, wg *sync.WaitGroup) {
 
     for c := n.FirstChild; c != nil; c = c.NextSibling {
         wg.Add(1)
-        go extractLinks(c, baseURL, depth, wg)
+        go extractLinks(c, baseURL, depth, wg, w)
     }
 }
 
-func parsePage(url string, depth int, wg *sync.WaitGroup) {
+func parsePage(url string, depth int, wg *sync.WaitGroup, w io.Writer) {
 	defer wg.Done()
 
 	resp, err := http.Get(url)
@@ -73,7 +76,7 @@ func parsePage(url string, depth int, wg *sync.WaitGroup) {
 	}
 
 	wg.Add(1)
-	extractLinks(doc, url, depth, wg)
+	extractLinks(doc, url, depth, wg, w)
 }
 
 func resolveURL(baseURL, link string) string {

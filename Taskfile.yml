@@ -1,20 +1,13 @@
 version : 3
 
 tasks:
-  build-parser:
+  build:
     cmds:
-      - go build -o bin/parser cmd/parser/main.go
-  run-parser:
-    cmds:
-      - task build-parser
-      - ./bin/parser
-  build-urls:
-    cmds:
-      - go build -o bin/urls cmd/urls/main.go
-  run-urls:
+      - go build -o bin/app cmd/main.go
+  run:
     cmds:
       - task build
-      - ./bin/urls
+      - ./bin/app
   deps:
     cmds:
       - go mod download
