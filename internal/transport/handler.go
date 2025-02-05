@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -39,7 +40,24 @@ func (h *Handler) ErrorRoute(handler handlerFunc) http.HandlerFunc {
 }
 
 func (h *Handler) GetContentHandler(w http.ResponseWriter, r *http.Request) error {
-	
+	url := r.URL.Query().Get("url")
+
+	pageinfo, err := h.service.ContentParsePage(url)
+	if err != nil{
+		h.logger.Info().Str("URL", url).Msg("Cant Parse!")
+		http.Error(w, "cant parse: " + err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	respbody, err := json.Marshal(pageinfo)
+	if err != nil{
+		h.logger.Info().Str("URL", url).Msg("Cant marshal!: " + err.Error())
+		http.Error(w, "cant marshal: " + err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	fmt.Fprint(w, string(respbody))
+	return nil
 }
 
 func (h *Handler) PingHandler(w http.ResponseWriter, r *http.Request) error {
