@@ -20,10 +20,10 @@ func (h Handler) RegisterRouter(mux *http.ServeMux) {
 	mux.HandleFunc("/ping",  h.ErrorRoute(h.PingHandler))
 }
 
-func New() Handler {
+func New(logsdir string) Handler {
 	return Handler{
 		service: &service.Service{
-			Logger: loger.New(),
+			Logger: loger.New(logsdir),
 			URLS: make([]string, 1),
 			Contents: make(map[string]string),
 		},

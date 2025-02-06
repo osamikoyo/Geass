@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/osamikoyo/geass/internal/config"
 	"github.com/osamikoyo/geass/internal/transport"
 	"github.com/osamikoyo/geass/pkg/loger"
 )
@@ -14,16 +15,20 @@ type Server struct {
 	Logger loger.Logger
 	Handler *transport.Handler
 	mux *http.ServeMux
+	config *config.Config
 }
 func New() Server {
-	handler := transport.New()
+	config, _ := config.Get("config.yml")
+
+	handler := transport.New(config.LogsDir)
 	return Server{
 		Handler: &handler,
-		Logger: loger.New(),
+		Logger: loger.New(config.LogsDir),
 		HttpServer: &http.Server{
 			Addr: "localhost:8080",
 		},
 		mux: http.NewServeMux(),
+		config: config,
 	}
 }
 

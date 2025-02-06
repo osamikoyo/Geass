@@ -2,6 +2,7 @@ package loger
 
 import (
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -12,14 +13,14 @@ type Logger struct {
 	*zerolog.Logger
 }
 
-func New() Logger {
+func New(dir string) Logger {
 	logger := zerolog.New(
 		zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339},
 	).Level(zerolog.TraceLevel)
 
 
 	fileWriter := &lumberjack.Logger{
-		Filename:   "app.log",
+		Filename:   filepath.Join(dir, "app.log"),
 		MaxSize:    10, // Максимальный размер файла в мегабайтах
 		MaxBackups: 3,  // Максимальное количество старых файлов
 		MaxAge:     28, // Максимальное количество дней хранения
