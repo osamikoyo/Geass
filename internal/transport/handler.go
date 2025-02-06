@@ -14,6 +14,11 @@ type Handler struct {
 	service *service.Service
 }
 
+type TextResponse struct{
+	Url string
+	Text string
+}
+
 func (h Handler) RegisterRouter(mux *http.ServeMux) {
 	mux.HandleFunc("/get/content", h.ErrorRoute(h.GetContentHandler))
 	mux.HandleFunc("/get/urls", h.ErrorRoute(h.GetUrlsHandler))
@@ -38,6 +43,28 @@ func (h *Handler) ErrorRoute(handler handlerFunc) http.HandlerFunc {
 			h.logger.Error().Str("URL", r.URL.Path).Str("METHOD", r.Method).Err(err)
 		}
 	}
+}
+
+func (h *Handler) GetPageTextContentHandler(w http.ResponseWriter, r *http.Request) error {
+	url := r.URL.Query().Get("url")
+
+	text, err := h.service.TextContentParse(url)
+	if err != nil{
+		return err
+	}
+
+	resp := &TextResponse{
+		Text: text,
+		Url: url,
+	}
+
+	body, err := json.Marshal(resp)
+	if err != nil{
+		return err
+	}
+
+	fmt.Fprint(w, body)
+	return nil
 }
 
 func (h *Handler) GetContentHandler(w http.ResponseWriter, r *http.Request) error {

@@ -25,7 +25,7 @@ func New() Server {
 		Handler: &handler,
 		Logger: loger.New(config.LogsDir),
 		HttpServer: &http.Server{
-			Addr: "localhost:8080",
+			Addr: fmt.Sprintf("%s:%d", config.Host, config.Port),
 		},
 		mux: http.NewServeMux(),
 		config: config,

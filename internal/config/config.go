@@ -9,8 +9,8 @@ import (
 type Config struct{
 	Port uint32 `yaml:"port"`
 	MaxDepth uint8 `yaml:"max_depth"`
-	DisAgreeDomains []string `yaml:"disagree_domains"`
 	LogsDir string `yaml:"logs_dir"`
+	Host string `yaml:"host"`
 }
 
 func Get(configpath string) (*Config, error) {

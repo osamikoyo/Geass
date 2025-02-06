@@ -31,7 +31,7 @@ func New(dir string) Logger {
 
 
 	multi := zerolog.MultiLevelWriter(logger, fileLogger)
-	lg := zerolog.New(multi).With().Timestamp().Caller().Logger()
+	lg := zerolog.New(multi).With().Timestamp().Logger()
 
 	return Logger{Logger: &lg}
 }

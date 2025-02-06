@@ -1,2 +1,4 @@
 port : 8080
 max_depth : 2
+logs_dir : "logs"
+host : "localhost"

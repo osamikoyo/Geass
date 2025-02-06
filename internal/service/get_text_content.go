@@ -2,11 +2,12 @@ package service
 
 import (
 	"fmt"
+	"net/http"
 
 	"golang.org/x/net/html"
 )
 
-func (s *Service) GetTextContent(n *html.Node) (string, error) {
+func GetTextContent(n *html.Node) (string, error) {
 	var text string
 
 	if n.Type == html.ElementNode {
@@ -26,4 +27,19 @@ func (s *Service) GetTextContent(n *html.Node) (string, error) {
 	}
 
 	return text,nil
+}
+
+func (s *Service) TextContentParse(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	doc, err := html.Parse(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return GetTextContent(doc)
 }
