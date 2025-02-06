@@ -11,3 +11,9 @@ tasks:
   deps:
     cmds:
       - go mod download
+  docker-build:
+    cmds:
+      - docker build -t geass .
+  docker-run:
+    cmds:
+      - docker run -p 8080:8080 -t geass

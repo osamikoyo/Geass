@@ -15,7 +15,8 @@ type Handler struct {
 }
 
 func (h Handler) RegisterRouter(mux *http.ServeMux) {
-	mux.HandleFunc("/getcontent", h.ErrorRoute(h.GetUrlsHandler))
+	mux.HandleFunc("/get/content", h.ErrorRoute(h.GetContentHandler))
+	mux.HandleFunc("/get/urls", h.ErrorRoute(h.GetUrlsHandler))
 	mux.HandleFunc("/ping",  h.ErrorRoute(h.PingHandler))
 }
 
