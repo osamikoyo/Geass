@@ -3,30 +3,25 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/html"
 )
 
-func GetTextContent(n *html.Node) (string, error) {
-	var text string
+func extractText(n *html.Node) string {
+	var fulltext string
 
-	if n.Type == html.ElementNode {
-		if n.Data == "title" {
-			if n.FirstChild != nil{
-				text = fmt.Sprintf("%s%s\n\n", text, n.FirstChild.Data)
-			}
+	if n.Type == html.TextNode {
+		text := strings.TrimSpace(n.Data)
+		if text != "" {
+			fulltext = fmt.Sprintf("%s%s", fulltext, text)
 		}
-		if n.Data == "h1" || n.Data == "h2" || n.Data == "h3"||
-		n.Data == "h4"  || n.Data == "h5" || n.Data == "h6" ||
-		n.Data == "a" || n.Data == "span" || n.Data == "p"{
-			if n.FirstChild != nil {
-				text = fmt.Sprintf("%s%s\n", text, n.FirstChild.Data)
-			}
-		}
-
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		extractText(c)
 	}
 
-	return text,nil
+	return fulltext
 }
 
 func (s *Service) TextContentParse(url string) (string, error) {
@@ -41,5 +36,5 @@ func (s *Service) TextContentParse(url string) (string, error) {
 		return "", err
 	}
 
-	return GetTextContent(doc)
+	return extractText(doc), nil
 }

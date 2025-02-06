@@ -23,6 +23,7 @@ func (h Handler) RegisterRouter(mux *http.ServeMux) {
 	mux.HandleFunc("/get/content", h.ErrorRoute(h.GetContentHandler))
 	mux.HandleFunc("/get/urls", h.ErrorRoute(h.GetUrlsHandler))
 	mux.HandleFunc("/ping",  h.ErrorRoute(h.PingHandler))
+	mux.HandleFunc("/get/text", h.ErrorRoute(h.GetPageTextContentHandler))
 }
 
 func New(logsdir string) Handler {
