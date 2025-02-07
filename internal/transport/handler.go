@@ -59,13 +59,14 @@ func (h *Handler) GetPageTextContentHandler(w http.ResponseWriter, r *http.Reque
 		Url: url,
 	}
 
+	w.Header().Set("Content-type", "application/json")
 	body, err := json.Marshal(resp)
 	if err != nil{
 		return err
 	}
 
-	fmt.Fprint(w, body)
-	return nil
+	_, err = w.Write(body)
+	return err
 }
 
 func (h *Handler) GetContentHandler(w http.ResponseWriter, r *http.Request) error {
