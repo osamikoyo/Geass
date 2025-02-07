@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,19 +10,23 @@ import (
 func extractText(n *html.Node) string {
 	var fulltext string
 
+	// Если текущий узел является текстовым, добавляем его содержимое
 	if n.Type == html.TextNode {
 		text := strings.TrimSpace(n.Data)
 		if text != "" {
-			fulltext = fmt.Sprintf("%s%s", fulltext, text)
+			fulltext += text + " "
 		}
 	}
+
+	// Рекурсивно обходим дочерние узлы
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		extractText(c)
+		fulltext += extractText(c)
 	}
 
 	return fulltext
 }
 
+// TextContentParse загружает HTML-страницу и извлекает текст
 func (s *Service) TextContentParse(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {

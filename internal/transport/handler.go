@@ -15,8 +15,8 @@ type Handler struct {
 }
 
 type TextResponse struct{
-	Url string
-	Text string
+	Url string `json:"url"`
+	Text string `json:"text"`
 }
 
 func (h Handler) RegisterRouter(mux *http.ServeMux) {
@@ -54,7 +54,7 @@ func (h *Handler) GetPageTextContentHandler(w http.ResponseWriter, r *http.Reque
 		return err
 	}
 
-	resp := &TextResponse{
+	resp := TextResponse{
 		Text: text,
 		Url: url,
 	}
