@@ -18,7 +18,7 @@ func (s *Service) Start(u string, w io.Writer) error {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
-	go parsePage(u, 1, &wg, w)
+	go ParsePage(u, 1, &wg, w)
 
 	wg.Wait()
 	return nil

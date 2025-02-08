@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -42,11 +41,10 @@ func extractLinks(n *html.Node, baseURL string, depth int, wg *sync.WaitGroup, w
 
                     if !visited.isVisited(absoluteURL) {
                         visited.add(absoluteURL)
-                        fmt.Println("Ссылка:", absoluteURL)
-						w.Write([]byte(absoluteURL))
+						w.Write([]byte(absoluteURL + "\n"))
                         if depth < 2 {
                             wg.Add(1)
-                            go parsePage(absoluteURL, depth+1, wg, w)
+                            go ParsePage(absoluteURL, depth+1, wg, w)
                         }
                     }
                     break
@@ -61,7 +59,7 @@ func extractLinks(n *html.Node, baseURL string, depth int, wg *sync.WaitGroup, w
     }
 }
 
-func parsePage(url string, depth int, wg *sync.WaitGroup, w io.Writer) {
+func ParsePage(url string, depth int, wg *sync.WaitGroup, w io.Writer) {
 	defer wg.Done()
 
 	resp, err := http.Get(url)

@@ -2,11 +2,15 @@ package transport
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/osamikoyo/geass/internal/service"
 	"github.com/osamikoyo/geass/pkg/loger"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type Handler struct {
@@ -24,6 +28,7 @@ func (h Handler) RegisterRouter(mux *http.ServeMux) {
 	mux.HandleFunc("/get/urls", h.ErrorRoute(h.GetUrlsHandler))
 	mux.HandleFunc("/ping",  h.ErrorRoute(h.PingHandler))
 	mux.HandleFunc("/get/text", h.ErrorRoute(h.GetPageTextContentHandler))
+	mux.Handle("/metrics", promhttp.Handler())
 }
 
 func New(logsdir string) Handler {
@@ -40,13 +45,18 @@ type handlerFunc func(w http.ResponseWriter, r *http.Request) error
 
 func (h *Handler) ErrorRoute(handler handlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		timer := prometheus.NewTimer(requestDuration)
+		defer timer.ObserveDuration()
 		if err := handler(w, r);err != nil{
 			h.logger.Error().Str("URL", r.URL.Path).Str("METHOD", r.Method).Err(err)
 		}
+		requestsCount.Inc()
 	}
 }
 
 func (h *Handler) GetPageTextContentHandler(w http.ResponseWriter, r *http.Request) error {
+	timer := prometheus.NewTimer(requestDuration)
+	defer timer.ObserveDuration()
 	url := r.URL.Query().Get("url")
 
 	text, err := h.service.TextContentParse(url)
@@ -65,6 +75,7 @@ func (h *Handler) GetPageTextContentHandler(w http.ResponseWriter, r *http.Reque
 		return err
 	}
 
+	requestsCount.Inc()
 	_, err = w.Write(body)
 	return err
 }
@@ -96,8 +107,24 @@ func (h *Handler) PingHandler(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *Handler) GetUrlsHandler(w http.ResponseWriter, r *http.Request) error {
-	url := r.URL.Query().Get("url")
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return errors.New("invalud request method")
+	}
 
-	h.service.Start(url, w)
+	pageURL := r.URL.Query().Get("url")
+	if pageURL == "" {
+		http.Error(w, "Missing URL parameter", http.StatusBadRequest)
+		return errors.New("url = nil")
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	// Отправляем ответ в формате текста
+	w.Header().Set("Content-Type", "text/plain")
+	go service.ParsePage(pageURL, 0, &wg, w)
+
+	wg.Wait()
 	return nil	
 }

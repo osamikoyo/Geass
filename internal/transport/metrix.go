@@ -1,9 +1,6 @@
-package server
+package transport
 
-import (
-    "github.com/prometheus/client_golang/prometheus"
-)
-
+import "github.com/prometheus/client_golang/prometheus"
 
 var (
     requestsCount = prometheus.NewCounter(
@@ -20,7 +17,7 @@ var (
     )
 )
 
-func init() {
+func InitMetrix() {
     prometheus.MustRegister(requestsCount)
     prometheus.MustRegister(requestDuration)
 }

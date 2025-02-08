@@ -44,6 +44,8 @@ func (s *Server) Run(ctx context.Context) error {
 	}()
 
 
+	transport.InitMetrix()
+
 	s.Handler.RegisterRouter(s.mux)
 
 	s.HttpServer.Handler = s.mux
