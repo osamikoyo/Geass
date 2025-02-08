@@ -3,6 +3,10 @@ web crawler for you
 
 ## Usage
 
+# Nead
+ * Go >= 1.23
+ * Docker-compose
+ * task(recomended)
 ### Instalization manual
 ```bash
 git clone github/osamikoyo/geass
@@ -12,8 +16,7 @@ task run
 ### Docker
 ```bash
 git clone github/osamikoyo/geass
-task docker-build
-task docker-run
+task run
 ```
 
 ### Handler
@@ -53,4 +56,16 @@ curl "localhost:PORT_IN_CONFIG/get/content?url=EXEMPLE_URL"
     "robots": "index, follow"
   }
 }
+```
+
+## Handler
+```bash
+curl "localhost:PORT_IN_CONFIG/get/urls?url=EXEMPLE_URL"
+```
+### output
+```
+http://exemplenumber1
+http://exemplenumber2
+http://exemplenumber3
+http://exemplenumber4
 ```
